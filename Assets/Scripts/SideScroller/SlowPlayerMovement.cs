@@ -197,8 +197,12 @@ public class SlowPlayerMovement : MonoBehaviour
     {
         if (collision.collider.CompareTag("Ground"))
         {
-            //reset the stairs when the player has reached the ground
-            _lastStair = null;
+            if (!_onStairs)
+            {
+                //reset the stairs when the player has reached the ground
+                _lastStair = null;
+                stairDict.Clear();
+            }
         }
     }
 
