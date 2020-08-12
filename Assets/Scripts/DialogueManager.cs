@@ -14,13 +14,16 @@ public class DialogueManager : MonoBehaviour
     public Text dialogueText;
     public Text testText;
     public GameObject dialogueBox;
-    public float downY;
+    public float lerpSpeed;
     public GameObject player;
 
     public static DialogueManager instance;
 
     [SerializeField]
     private Vector3 originalPos;
+
+    float currY;
+    float targetY;
 
     private void Awake()
     {
@@ -41,8 +44,9 @@ public class DialogueManager : MonoBehaviour
         sentences = new Queue<string>();
 
         //record original position and hide the dialogue box;
-        originalPos = dialogueBox.GetComponent<RectTransform>().transform.position;
-        //Vector3 screenOrigPos = canvas.worldCamera.WorldToViewportPoint(originalPos);
+        originalPos = dialogueBox.GetComponent<RectTransform>().anchoredPosition;
+        //Vector3 screenOrigPos = cam.ScreenToWorldPoint(originalPos);
+        //originalPos = screenOrigPos;
 
         //testText.text = screenOrigPos.ToString();
 
@@ -94,10 +98,12 @@ public class DialogueManager : MonoBehaviour
         dialogueBox.SetActive(true);                                                //show the dialogue box
 
         //animate dialogue box oout of the screen
-        LeanTween.move(dialogueBox, originalPos, 2f).setEase(LeanTweenType.easeInOutQuad);
+        //LeanTween.move(dialogueBox, originalPos, 2f).setEase(LeanTweenType.easeInOutQuad);
 
         ////move the player again (NOTE: this doesn't do anything if the player was already moving)
         //player.GetComponent<PlayerMovement>().startMovement.Invoke();
+
+        targetY = originalPos.y;
     }
 
     private void Update()
@@ -106,6 +112,12 @@ public class DialogueManager : MonoBehaviour
         {
             DisplayNextSentence();
         }
+
+        float newY = Mathf.Lerp(currY, targetY, lerpSpeed);
+
+        dialogueBox.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, newY);
+
+        currY = newY;
     }
 
     public void DisplayNextSentence()
@@ -152,12 +164,14 @@ public class DialogueManager : MonoBehaviour
 
         //testText.text = targetPos.ToString();
 
-        Vector3 targetPos = dialogueBox.GetComponent<RectTransform>().transform.position;   //get the position of the dialog box (pivot at the top of the box)
+        Vector3 targetPos = dialogueBox.GetComponent<RectTransform>().anchoredPosition;   //get the position of the dialog box (pivot at the top of the box)
+        //targetPos = cam.ScreenToWorldPoint(targetPos);
         targetPos.y = 0;                                                                    //y of zero is the bottom of the screen/canvas
-
+        targetY = 0;
 
         //animate dialogue box oout of the screen
-        LeanTween.move(dialogueBox, targetPos, 2f).setEase(LeanTweenType.easeInOutQuad).setOnComplete(Hide);
+        //LeanTween.move(dialogueBox, targetPos, 2f).setEase(LeanTweenType.easeInOutQuad).setOnComplete(Hide);
+        dialogueBox.GetComponent<RectTransform>().anchoredPosition =Vector2.zero;
 
         //dialogueBox.gameObject.SetActive(false);                                            //hide the dialogue box
 
