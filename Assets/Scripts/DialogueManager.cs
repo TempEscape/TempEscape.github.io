@@ -57,6 +57,14 @@ public class DialogueManager : MonoBehaviour
 
     public void StartDialogue(Dialogue dialogue)
     {
+        //record the dialogue in journal
+        //TODO: cache the journal and make sure that the instance is always created
+        if(Journal.instance != null)
+        {
+            Journal.instance.AddDialogue(dialogue);
+            Debug.Log("recorded dialogue with " + dialogue.name + " in journal.");
+        }
+
         ShowDialogue();
 
         if (player != null)
